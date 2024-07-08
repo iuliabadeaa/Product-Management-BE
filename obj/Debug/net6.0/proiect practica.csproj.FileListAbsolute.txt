@@ -61,3 +61,4 @@ C:\Users\maria\OneDrive\Desktop\product management\proiect practica\obj\Debug\ne
 C:\Users\maria\OneDrive\Desktop\product management\proiect practica\obj\Debug\net6.0\proiect practica.pdb
 C:\Users\maria\OneDrive\Desktop\product management\proiect practica\obj\Debug\net6.0\proiect practica.genruntimeconfig.cache
 C:\Users\maria\OneDrive\Desktop\product management\proiect practica\obj\Debug\net6.0\ref\proiect practica.dll
+C:\Users\maria\OneDrive\Desktop\product management\proiect practica\obj\Debug\net6.0\proiect practica.sourcelink.json

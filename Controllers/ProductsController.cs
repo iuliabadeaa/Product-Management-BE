@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using proiect_practica; // Ensure to use the correct namespace where your DbContext and Produs class are defined
+using proiect_practica; 
 
 namespace proiect_practica.Controllers
 {
@@ -18,14 +18,14 @@ namespace proiect_practica.Controllers
             _context = context;
         }
 
-        // GET: api/products
+        // GET all
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Produs>>> GetProducts()
         {
             return await _context.Produse.ToListAsync();
         }
 
-        // GET: api/products/5
+        // GET dupa ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Produs>> GetProduct(int id)
         {
@@ -39,20 +39,34 @@ namespace proiect_practica.Controllers
             return product;
         }
 
-        // POST: api/products
+        // POST
         [HttpPost]
         public async Task<ActionResult<Produs>> PostProduct(Produs product)
         {
-            await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.produs ON");
-            _context.Produse.Add(product);
-            await _context.SaveChangesAsync();
-            await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.produs OFF");
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.produs ON");
 
+                    _context.Produse.Add(product);
+                    await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProduct), new { id = product.ID }, product);
+                    await _context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT dbo.produs OFF");
+
+                    await transaction.CommitAsync();
+
+                    return CreatedAtAction(nameof(GetProduct), new { id = product.ID }, product);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
         }
 
-        // PUT: api/products/5
+        // PUT
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Produs product)
         {
@@ -82,7 +96,7 @@ namespace proiect_practica.Controllers
             return NoContent();
         }
 
-        // DELETE: api/products/5
+        // DELETE dupa ID
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
